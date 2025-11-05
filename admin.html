@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spice Garden - Admin Panel</title>
+    <link rel="stylesheet" href="admin-styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Admin Login Section -->
+    <div class="login-section" id="loginSection">
+        <div class="login-container">
+            <div class="login-form">
+                <div class="login-header">
+                    <i class="fas fa-shield-alt"></i>
+                    <h2>Admin Login</h2>
+                    <p>Spice Garden Administration</p>
+                </div>
+                <form id="adminLoginForm">
+                    <div class="form-group">
+                        <input type="text" id="adminUsername" placeholder="Admin Username" required>
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" id="adminPassword" placeholder="Password" required>
+                        <i class="fas fa-lock"></i>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-large">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </button>
+                </form>
+                <div class="login-info">
+                    <p><strong>Default Admin:</strong> admin / admin123</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div class="admin-dashboard" id="adminDashboard" style="display: none;">
+        <!-- Admin Header -->
+        <header class="admin-header">
+            <div class="admin-header-content">
+                <div class="admin-logo">
+                    <i class="fas fa-utensils"></i>
+                    <h1>Spice Garden Admin</h1>
+                </div>
+                <div class="admin-actions">
+                    <button class="btn btn-info" onclick="refreshData()">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                    <button class="btn btn-warning" onclick="exportAllData()">
+                        <i class="fas fa-file-excel"></i> Export Excel
+                    </button>
+                    <button class="btn btn-danger" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Admin Sidebar -->
+        <aside class="admin-sidebar">
+            <nav class="admin-nav">
+                <ul>
+                    <li class="nav-item active" data-section="dashboard">
+                        <i class="fas fa-tachometer-alt"></i>
+                        <span>Dashboard</span>
+                    </li>
+                    <li class="nav-item" data-section="orders">
+                        <i class="fas fa-list-alt"></i>
+                        <span>All Orders</span>
+                    </li>
+                    <li class="nav-item" data-section="analytics">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>Analytics</span>
+                    </li>
+                    <li class="nav-item" data-section="customers">
+                        <i class="fas fa-users"></i>
+                        <span>Customers</span>
+                    </li>
+                    <li class="nav-item" data-section="menu">
+                        <i class="fas fa-book"></i>
+                        <span>Menu Items</span>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Admin Main Content -->
+        <main class="admin-main">
+            <!-- Dashboard Content -->
+            <div class="admin-content" id="dashboardContent">
+                <div class="content-header">
+                    <h2><i class="fas fa-tachometer-alt"></i> Dashboard Overview</h2>
+                    <p>Restaurant management and analytics</p>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-shopping-cart"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="totalOrders">0</h3>
+                            <p>Total Orders</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-rupee-sign"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="totalRevenue">₹0</h3>
+                            <p>Total Revenue</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="totalCustomers">0</h3>
+                            <p>Total Customers</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="stat-content">
+                            <h3 id="avgOrderValue">₹0</h3>
+                            <p>Avg Order Value</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-charts">
+                    <div class="chart-card">
+                        <h3>Recent Orders</h3>
+                        <div class="recent-orders" id="recentOrders">
+                            <!-- Recent orders will be populated here -->
+                        </div>
+                    </div>
+                    <div class="chart-card">
+                        <h3>Top Items</h3>
+                        <div class="top-items" id="topItems">
+                            <!-- Top items will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Orders Content -->
+            <div class="admin-content" id="ordersContent" style="display: none;">
+                <div class="content-header">
+                    <h2><i class="fas fa-list-alt"></i> All Orders</h2>
+                    <div class="content-actions">
+                        <input type="text" id="orderSearch" placeholder="Search orders..." onkeyup="searchOrders()">
+                        <select id="statusFilter" onchange="filterOrders()">
+                            <option value="all">All Status</option>
+                            <option value="placed">Placed</option>
+                            <option value="preparing">Preparing</option>
+                            <option value="ready">Ready</option>
+                            <option value="completed">Completed</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="orders-table-container">
+                    <table class="orders-table" id="ordersTable">
+                        <thead>
+                            <tr>
+                                <th>Order ID</th>
+                                <th>Date & Time</th>
+                                <th>Customer</th>
+                                <th>Table</th>
+                                <th>Items</th>
+                                <th>Total</th>
+                                <th>Status</th>
+                                <th>Receipt</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ordersTableBody">
+                            <!-- Orders will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Analytics Content -->
+            <div class="admin-content" id="analyticsContent" style="display: none;">
+                <div class="content-header">
+                    <h2><i class="fas fa-chart-bar"></i> Analytics & Reports</h2>
+                    <div class="content-actions">
+                        <button class="btn btn-success" onclick="generateReport()">
+                            <i class="fas fa-chart-pie"></i> Generate Report
+                        </button>
+                        <button class="btn btn-info" onclick="exportAnalytics()">
+                            <i class="fas fa-download"></i> Export Analytics
+                        </button>
+                        <button class="btn btn-warning" onclick="exportRevenueReport()">
+                            <i class="fas fa-file-excel"></i> Export Revenue Report
+                        </button>
+                    </div>
+                </div>
+
+                <div class="analytics-grid">
+                    <div class="analytics-card">
+                        <h3>Revenue by Day</h3>
+                        <div class="revenue-chart" id="revenueChart">
+                            <!-- Revenue chart will be populated here -->
+                        </div>
+                    </div>
+                    <div class="analytics-card">
+                        <h3>Popular Items</h3>
+                        <div class="popular-items" id="popularItems">
+                            <!-- Popular items will be populated here -->
+                        </div>
+                    </div>
+                    <div class="analytics-card">
+                        <h3>Customer Analytics</h3>
+                        <div class="customer-analytics" id="customerAnalytics">
+                            <!-- Customer analytics will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Customers Content -->
+            <div class="admin-content" id="customersContent" style="display: none;">
+                <div class="content-header">
+                    <h2><i class="fas fa-users"></i> Customer Management</h2>
+                    <div class="content-actions">
+                        <input type="text" id="customerSearch" placeholder="Search customers..." onkeyup="searchCustomers()">
+                    </div>
+                </div>
+
+                <div class="customers-table-container">
+                    <table class="customers-table" id="customersTable">
+                        <thead>
+                            <tr>
+                                <th>Customer Name</th>
+                                <th>Mobile</th>
+                                <th>Email</th>
+                                <th>Total Orders</th>
+                                <th>Total Spent</th>
+                                <th>Last Order</th>
+                                <th>Receipt</th>
+                            </tr>
+                        </thead>
+                        <tbody id="customersTableBody">
+                            <!-- Customers will be populated here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Menu Content -->
+            <div class="admin-content" id="menuContent" style="display: none;">
+                <div class="content-header">
+                    <h2><i class="fas fa-book"></i> Menu Management</h2>
+                    <div class="content-actions">
+                        <button class="btn btn-primary" onclick="showAddMenuItemModal()">
+                            <i class="fas fa-plus"></i> Add Item
+                        </button>
+                        <button class="btn btn-info" onclick="exportMenuReport()">
+                            <i class="fas fa-file-excel"></i> Export Menu Report
+                        </button>
+                    </div>
+                </div>
+
+                <div class="menu-items-grid" id="menuItemsGrid">
+                    <!-- Menu items will be populated here -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Order Details Modal -->
+    <div class="modal" id="orderDetailsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Order Details</h3>
+                <button class="close-modal" onclick="closeOrderDetailsModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="order-details-content" id="orderDetailsContent">
+                    <!-- Order details will be populated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Menu Item Modal -->
+    <div class="modal" id="addMenuItemModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add Menu Item</h3>
+                <button class="close-modal" onclick="closeAddMenuItemModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="addMenuItemForm">
+                    <div class="form-group">
+                        <label>Item Name</label>
+                        <input type="text" id="itemName" placeholder="Enter item name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Price (₹)</label>
+                        <input type="number" id="itemPrice" placeholder="Enter price" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select id="itemCategory" required>
+                            <option value="">Select Category</option>
+                            <option value="appetizers">Appetizers</option>
+                            <option value="mains">Main Course</option>
+                            <option value="biryani">Biryani</option>
+                            <option value="curries">Curries</option>
+                            <option value="breads">Breads</option>
+                            <option value="desserts">Desserts</option>
+                            <option value="beverages">Beverages</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="itemDescription" placeholder="Enter item description" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Emoji Icon</label>
+                        <input type="text" id="itemEmoji" placeholder="🍽️" maxlength="2">
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeAddMenuItemModal()">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Add Item</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Menu Item Modal -->
+    <div class="modal" id="editMenuItemModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Edit Menu Item</h3>
+                <button class="close-modal" onclick="closeEditMenuItemModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="editMenuItemForm">
+                    <input type="hidden" id="editItemId">
+                    <div class="form-group">
+                        <label>Item Name</label>
+                        <input type="text" id="editItemName" placeholder="Enter item name" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Price (₹)</label>
+                        <input type="number" id="editItemPrice" placeholder="Enter price" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Category</label>
+                        <select id="editItemCategory" required>
+                            <option value="">Select Category</option>
+                            <option value="appetizers">Appetizers</option>
+                            <option value="mains">Main Course</option>
+                            <option value="biryani">Biryani</option>
+                            <option value="curries">Curries</option>
+                            <option value="breads">Breads</option>
+                            <option value="desserts">Desserts</option>
+                            <option value="beverages">Beverages</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="editItemDescription" placeholder="Enter item description" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Emoji Icon</label>
+                        <input type="text" id="editItemEmoji" placeholder="🍽️" maxlength="2">
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" onclick="closeEditMenuItemModal()">Cancel</button>
+                        <button type="button" class="btn btn-danger" onclick="deleteMenuItem()">Delete Item</button>
+                        <button type="submit" class="btn btn-primary">Update Item</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Loading...</p>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>

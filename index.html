@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spice Garden - Digital Menu</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <i class="fas fa-utensils"></i>
+                <h1>Spice Garden</h1>
+            </div>
+            <div class="header-actions">
+                <button class="btn btn-primary" onclick="showOrderHistory()">
+                    <i class="fas fa-history"></i> Order History
+                </button>
+                <div class="cart-icon" onclick="toggleCart()">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count" id="cartCount">0</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Customer Info Section -->
+    <section class="customer-info-section" id="customerInfoSection">
+        <div class="container">
+            <div class="customer-form">
+                <h2>Welcome to Spice Garden</h2>
+                <p>Please provide your details to start ordering</p>
+                <form id="customerForm">
+                    <div class="form-group">
+                        <input type="text" id="customerName" placeholder="Your Name" required>
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="form-group">
+                        <input type="tel" id="customerMobile" placeholder="Mobile Number" required>
+                        <i class="fas fa-phone"></i>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" id="customerEmail" placeholder="Email Address" required>
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" id="tableNumber" placeholder="Table Number" required>
+                        <i class="fas fa-chair"></i>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-large">
+                        <i class="fas fa-arrow-right"></i> Start Ordering
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Menu Section -->
+    <section class="menu-section" id="menuSection" style="display: none;">
+        <div class="container">
+            <div class="menu-header">
+                <h2>Our Delicious Menu</h2>
+                <div class="menu-categories">
+                    <button class="category-btn active" onclick="filterMenu('all')">All</button>
+                    <button class="category-btn" onclick="filterMenu('appetizers')">Appetizers</button>
+                    <button class="category-btn" onclick="filterMenu('mains')">Main Course</button>
+                    <button class="category-btn" onclick="filterMenu('biryani')">Biryani</button>
+                    <button class="category-btn" onclick="filterMenu('curries')">Curries</button>
+                    <button class="category-btn" onclick="filterMenu('breads')">Breads</button>
+                    <button class="category-btn" onclick="filterMenu('desserts')">Desserts</button>
+                    <button class="category-btn" onclick="filterMenu('beverages')">Beverages</button>
+                </div>
+            </div>
+
+            <div class="menu-grid" id="menuGrid">
+                <!-- Menu items will be populated by JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Cart Sidebar -->
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h3>Your Order</h3>
+            <button class="close-cart" onclick="toggleCart()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <!-- Cart items will be populated by JavaScript -->
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Total: ₹<span id="cartTotal">0</span></span>
+            </div>
+            <button class="btn btn-primary btn-large" onclick="placeOrder()">
+                <i class="fas fa-check"></i> Place Order
+            </button>
+        </div>
+    </div>
+
+    <!-- Order Confirmation Modal -->
+    <div class="modal" id="orderModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Order Placed Successfully!</h3>
+                <button class="close-modal" onclick="closeOrderModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="order-details">
+                    <p><strong>Order ID:</strong> <span id="orderId"></span></p>
+                    <p><strong>Customer:</strong> <span id="orderCustomer"></span></p>
+                    <p><strong>Table:</strong> <span id="orderTable"></span></p>
+                    <p><strong>Total Amount:</strong> ₹<span id="orderTotal"></span></p>
+                </div>
+                <div class="order-actions">
+                <button class="btn btn-secondary" onclick="closeOrderModal()">Close</button>
+                <button class="btn btn-info" onclick="viewReceipt()">
+                    <i class="fas fa-receipt"></i> View Receipt
+                </button>
+                <button class="btn btn-primary" onclick="addMoreItems()">Add More Items</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order History Modal -->
+    <div class="modal" id="historyModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Order History</h3>
+                <button class="close-modal" onclick="closeHistoryModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="history-list" id="historyList">
+                    <!-- Order history will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Digital Receipt Modal -->
+    <div class="modal" id="receiptModal">
+        <div class="modal-content receipt-modal">
+            <div class="modal-header">
+                <h3><i class="fas fa-receipt"></i> Digital Receipt</h3>
+                <button class="close-modal" onclick="closeReceiptModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="receipt-content" id="receiptContent">
+                    <!-- Receipt content will be populated by JavaScript -->
+                </div>
+                <div class="receipt-actions">
+                    <button class="btn btn-secondary" onclick="closeReceiptModal()">
+                        <i class="fas fa-times"></i> Close
+                    </button>
+                    <button class="btn btn-info" onclick="printReceipt()">
+                        <i class="fas fa-print"></i> Print Receipt
+                    </button>
+                    <button class="btn btn-success" onclick="downloadReceipt()">
+                        <i class="fas fa-download"></i> Download PDF
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+            <p>Processing your order...</p>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
